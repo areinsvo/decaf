@@ -67,9 +67,20 @@ class AnalysisProcessor(processor.ProcessorABC):
             'mu1eta': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("mu1eta","Leading Muon Eta",48,-2.4,2.4)),
             'mu1phi': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("mu1phi","Leading Muon Phi",64,-3.2,3.2)),
             'dimumass': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("dimumass","Dimuon mass",100,0,500)),
-            'TopTagger': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("TopTagger","TopTagger",15,0,1)),
-            'DarkHiggsTagger': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("DarkHiggsTagger","DarkHiggsTagger",15,0,1)),
+
+#First guess at Tagger variables to use
+            'TopTagger_Raw': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("TopTagger_Raw","TopTagger_Raw",15,0,1)),
+            'DarkHiggsTagger_Raw': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("DarkHiggsTagger_Raw","DarkHiggsTagger_Raw",15,0,1)),
             'VvsQCDTagger': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("VvsQCDTagger","VvsQCDTagger",15,0,1)),
+
+#Additional histograms to test sensitivity of tagger combinations - delete once optimized
+            'TopTagger_Binary': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("TopTagger_Binary","TopTagger_Binary",15,0,1)),
+#Also try dark Higgs binary, with and without including QCD to bb
+            'DarkHiggsTagger_Binary': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("DarkHiggsTagger_Binary","DarkHiggsTagger_Binary",15,0,1)),
+            'DarkHiggsTagger_Raw_QCDtobb': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("DarkHiggsTagger_Raw_QCDtobb","DarkHiggsTagger_Raw_QCDtobb",15,0,1)),
+            'DarkHiggsTagger_Binary_QCDtobb': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("DarkHiggsTagger_Binary_QCDtobb","DarkHiggsTagger_Binary_QCDtobb",15,0,1)),
+            'VvsQCDTagger_probZtobb': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("VvsQCDTagger_probZtobb","VvsQCDTagger_probZtobb",15,0,1)),
+
             'probTbcq': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("probTbcq","probTbcq",15,0,1)),
             'probTbqq': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("probTbqq","probTbqq",15,0,1)),
             'probTbc': hist.Hist("Events", hist.Cat("dataset", "Primary dataset"), hist.Cat("region", "Region"), hist.Cat("jet_selection", "JetSelection"), hist.Bin("probTbc","probTbc",15,0,1)),
@@ -240,10 +251,20 @@ class AnalysisProcessor(processor.ProcessorABC):
                 if deep[self._year][key] in df:
                     fj[key] = df[deep[self._year][key]]
 
-            #fj['probQCD'] = fj.probQCDbb+fj.probQCDcc+fj.probQCDb+fj.probQCDc+fj.probQCDothers
-            fj['TopTagger'] = fj.probTbcq+fj.probTbqq
-            fj['DarkHiggsTagger'] = fj.probZbb + fj.probHbb #/ (fj.probZbb+fj.probHbb+fj.probWcq+fj.probWqq+fj.probZcc+fj.probZqq+fj.probHcc+fj.probHqqqq+fj.probQCD)
-            fj['VvsQCDTagger'] = (fj.probWcq+fj.probWqq+fj.probZcc+fj.probZqq) / (fj.probWcq+fj.probWqq+fj.probZcc+fj.probZqq+fj.probQCDothers+fj.probQCDcc)
+            fj['probQCD'] = fj.probQCDbb+fj.probQCDcc+fj.probQCDb+fj.probQCDc+fj.probQCDothers
+            
+            fj['TopTagger_Raw'] = fj.probTbcq+fj.probTbqq
+            fj['TopTagger_Binary'] = (fj.probTbcq+fj.probTbqq)/(fj.probTbcq+fj.probTbqq+fj.probQCD)
+
+            fj['DarkHiggsTagger_Raw'] = fj.probZbb + fj.probHbb 
+            fj['DarkHiggsTagger_Binary'] = (fj.probZbb + fj.probHbb) / (fj.probZbb+fj.probHbb+fj.probWcq+fj.probWqq+fj.probZcc+fj.probZqq+fj.probHcc+fj.probHqqqq+fj.probQCD)
+
+            fj['DarkHiggsTagger_Raw_QCDtobb'] = fj.probZbb + fj.probHbb + fj.probQCDbb
+            fj['DarkHiggsTagger_Binary_QCDtobb'] = (fj.probZbb + fj.probHbb + fj.probQCDbb) / (fj.probZbb+fj.probHbb+fj.probWcq+fj.probWqq+fj.probZcc+fj.probZqq+fj.probHcc+fj.probHqqqq+fj.probQCD)
+
+            fj['VvsQCDTagger'] = (fj.probWcq+fj.probWqq+fj.probZcc+fj.probZqq) / (fj.probWcq+fj.probWqq+fj.probZcc+fj.probZqq+fj.probQCD)
+            fj['VvsQCDTagger_probZtobb'] = (fj.probWcq+fj.probWqq+fj.probZcc+fj.probZqq+fj.probZbb) / (fj.probWcq+fj.probWqq+fj.probZcc+fj.probZqq+fj.probQCD+fj.probZbb)
+
 
             leading_fj = fj[fj.pt.argmax()]
             leading_fj = leading_fj[leading_fj.isclean]
@@ -470,12 +491,12 @@ class AnalysisProcessor(processor.ProcessorABC):
             selections.add('istwoM', (e_nloose==0) & (mu_ntight>=1) & (mu_nloose==2) & (tau_nloose==0)&(pho_nloose==0)&(leading_dimu.mass.sum()>60) & (leading_dimu.mass.sum()<120))
             selections.add('istwoE', (e_ntight>=1) & (e_nloose==2)&(mu_nloose==0)&(tau_nloose==0)&(pho_nloose==0)&(leading_diele.mass.sum()>60)&(leading_diele.mass.sum()<120))
             selections.add('isoneA', (e_nloose==0)&(mu_nloose==0)&(tau_nloose==0)&(pho_ntight==1))
-            selections.add('topveto', (leading_fj.TopTagger.sum()<0.25))
+            selections.add('topveto', (leading_fj.TopTagger_Raw.sum()<0.25))
             selections.add('noextrab', (j_ndflvL==0))
             selections.add('extrab', (j_ndflvL>0))
-            selections.add('ismonohs', (leading_fj.DarkHiggsTagger.sum()>0.2))
-            selections.add('ismonoV', ~(leading_fj.DarkHiggsTagger.sum()>0.2)&(leading_fj.VvsQCDTagger.sum()>0.8))
-            selections.add('ismonojet', ~(leading_fj.DarkHiggsTagger.sum()>0.2)&~(leading_fj.VvsQCDTagger.sum()>0.8))
+            selections.add('ismonohs', (leading_fj.DarkHiggsTagger_Raw.sum()>0.2))
+            selections.add('ismonoV', ~(leading_fj.DarkHiggsTagger_Raw.sum()>0.2)&(leading_fj.VvsQCDTagger.sum()>0.8))
+            selections.add('ismonojet', ~(leading_fj.DarkHiggsTagger_Raw.sum()>0.2)&~(leading_fj.VvsQCDTagger.sum()>0.8))
             selections.add('noHEMj', (j_nHEM==0))
 
             #selections.add('istwoM', (e_nloose==0) & (mu_ntight==1) & (mu_nloose==2) & (tau_nloose==0)&(pho_nloose==0)&(leading_dimu.mass.sum()>60) & (leading_dimu.mass.sum()<120))
@@ -535,9 +556,18 @@ class AnalysisProcessor(processor.ProcessorABC):
             variables['nfjgood'] = fj_ngood
             variables['nfjclean'] = fj_nclean
             variables['fjmass'] = leading_fj.mass
-            variables['TopTagger'] = leading_fj.TopTagger
-            variables['DarkHiggsTagger'] = leading_fj.DarkHiggsTagger
+
+            variables['TopTagger_Raw'] = leading_fj.TopTagger_Raw
+            variables['TopTagger_Binary'] = leading_fj.TopTagger_Binary
+
+            variables['DarkHiggsTagger_Raw'] = leading_fj.DarkHiggsTagger_Raw
+            variables['DarkHiggsTagger_Binary'] = leading_fj.DarkHiggsTagger_Binary
+            variables['DarkHiggsTagger_Raw_QCDtobb'] = leading_fj.DarkHiggsTagger_Raw_QCDtobb
+            variables['DarkHiggsTagger_Binary_QCDtobb'] = leading_fj.DarkHiggsTagger_Binary_QCDtobb
+
             variables['VvsQCDTagger'] = leading_fj.VvsQCDTagger
+            variables['VvsQCDTagger_probZtobb'] = leading_fj.VvsQCDTagger_probZtobb
+
             variables['probTbcq']      = leading_fj.probTbcq
             variables['probTbqq']      = leading_fj.probTbqq
             variables['probTbc']       = leading_fj.probTbc
