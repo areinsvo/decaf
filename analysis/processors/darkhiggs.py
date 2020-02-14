@@ -193,7 +193,8 @@ class AnalysisProcessor(processor.ProcessorABC):
 
             get_msd_weight          = self._corrections['get_msd_weight']    
             get_ttbar_weight        = self._corrections['get_ttbar_weight']       
-            get_nlo_weight          = self._corrections['get_nlo_weight']         
+            get_nlo_weight          = self._corrections['get_nlo_weight']
+            get_nnlo_weight         = self._corrections['get_nnlo_weight']          
             get_adhoc_weight        = self._corrections['get_adhoc_weight']       
             get_pu_weight           = self._corrections['get_pu_weight']          
             get_met_trig_weight     = self._corrections['get_met_trig_weight']    
@@ -513,9 +514,11 @@ class AnalysisProcessor(processor.ProcessorABC):
                         wnlo = np.sqrt(get_ttbar_weight(genTops[0].sum()) * get_ttbar_weight(genTops[1].sum()))
                     elif('WJets' in dataset): 
                         wnlo = get_nlo_weight[self._year]['w'](genWs[0].sum())
+                        wnnlo= get_nnlo_weight[self._year]['w'](genWs[0].sum())
                         if self._year != '2016': adhocw = get_adhoc_weight['w'](genWs[0].sum())
                     elif('DY' in dataset or 'ZJets' in dataset): 
                         wnlo = get_nlo_weight[self._year]['z'](genZs[0].sum())
+                        wnnlo= get_nnlo_weight[self._year]['z'](genZs[0].sum())
                         if self._year != '2016': adhocw = get_adhoc_weight['z'](genZs[0].sum())
                     elif('GJets' in dataset): wnlo = get_nlo_weight[self._year]['a'](genAs[0].sum())
 
