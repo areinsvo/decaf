@@ -71,7 +71,7 @@ for year in ['2016','2017','2018']:
 
 get_nlo_weight = {}
 
-kfactor = uproot.open("secondary_inputs/nlo/kfactors.root")
+kfactor = uproot.open("secondary_inputs/theory/kfactors.root")
 for year in ['2016','2017','2018']:
 
     get_nlo_weight[year] = {}
@@ -105,6 +105,11 @@ for year in ['2016','2017','2018']:
 
         get_nlo_weight[year][type]=lookup_tools.dense_lookup.dense_lookup(sf_qcd*sf_ewk, kfactor[nlo[type]].edges)
         if (year != '2016' and type != 'a'): get_nlo_weight[year][type]=lookup_tools.dense_lookup.dense_lookup(sf_ewk, kfactor[nlo[type]].edges)
+
+get_nnlo_weight = {}
+kfactor = uproot.open("secondary_inputs/theory/lindert_qcd_nnlo_sf.root")
+get_nnlo_weight['z'] = lookup_tools.dense_lookup.dense_lookup(kfactor["eej"].values, kfactor["eej"].edges)
+get_nnlo_weight['w'] = lookup_tools.dense_lookup.dense_lookup(kfactor["evj"].values, kfactor["evj"].edges)
 
 get_adhoc_weight = {}                                       
 kfactor = uproot.open("secondary_inputs/nlo/2017_gen_v_pt_stat1_qcd_sf.root")
