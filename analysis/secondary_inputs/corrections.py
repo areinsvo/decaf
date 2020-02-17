@@ -112,7 +112,7 @@ get_nnlo_weight['z'] = lookup_tools.dense_lookup.dense_lookup(kfactor["eej"].val
 get_nnlo_weight['w'] = lookup_tools.dense_lookup.dense_lookup(kfactor["evj"].values, kfactor["evj"].edges)
 
 get_adhoc_weight = {}                                       
-kfactor = uproot.open("secondary_inputs/nlo/2017_gen_v_pt_stat1_qcd_sf.root")
+kfactor = uproot.open("secondary_inputs/theory/2017_gen_v_pt_stat1_qcd_sf.root")
 get_adhoc_weight['z']=lookup_tools.dense_lookup.dense_lookup(kfactor["dy_monojet"].values, kfactor["dy_monojet"].edges)
 get_adhoc_weight['w']=lookup_tools.dense_lookup.dense_lookup(kfactor["wjet_monojet"].values, kfactor["wjet_monojet"].edges)
 
