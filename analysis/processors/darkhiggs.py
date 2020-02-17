@@ -479,6 +479,7 @@ class AnalysisProcessor(processor.ProcessorABC):
             genw = np.ones_like(df['MET_pt'])
             sumw = 1.
             wnlo = np.ones_like(df['MET_pt'])
+            wnnlo = np.ones_like(df['MET_pt'])
             adhocw = np.ones_like(df['MET_pt'])
             if self._xsec[dataset] != -1:
                 genw = df['genWeight']
@@ -624,6 +625,7 @@ class AnalysisProcessor(processor.ProcessorABC):
             for k in selected_regions[dataset]:
                 weights[k] = processor.Weights(df.size)
                 weights[k].add('nlo',wnlo)
+                weights[k].add('nnlo',wnnlo)
                 weights[k].add('adhoc',adhocw)
                 weights[k].add('genw',genw)
                 weights[k].add('pileup',pu,puUp,puDown)
